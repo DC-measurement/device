@@ -1,1 +1,1 @@
-print('こんにちは')ppppppp
+print('こんにちは')ppp
