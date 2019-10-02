@@ -1,4 +1,4 @@
-# auther kim
+# auther kimto
 
 import paho.mqtt.publish as publish
 from time import sleep
