@@ -1,15 +1,38 @@
 import visa
-import time
 import pandas as  pd
+import numpy as np
+import random
+import datetime
+import matplotlib.pyplot as plt
 
-a = "1.2"
-b = "3.4"
-c = "5.6"
+ms_A=[]
+ms_V=[]
+ms_R=[]
+for i in range(10):
+    I=random.random()
+    V=random.random()
+    R=random.random()
+    ms_A.append(I)
+    ms_V.append(V)
+    ms_R.append(R)
+ 
+me_time= datetime.datetime.today()
+print(me_time)
+print("-----------------------------------")
+print("電流")
+print(ms_A)
+print("電圧")
+print(ms_V)
+print("抵抗")
+print(ms_R)
 
-U=[a,b,c]
-
-print(U)
-
-
+#散布図
+x=ms_A
+y=ms_V
+plt.scatter(x,y)
+plt.title("IvsV")
+plt.xlabel("I[mA]")
+plt.ylabel("V[mV]")
+plt.show()
 
 
