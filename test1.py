@@ -148,5 +148,3 @@ plt.title("IvsV")
 plt.xlabel("I[mA]")
 plt.ylabel("V[mV]")
 plt.show()
-
-
