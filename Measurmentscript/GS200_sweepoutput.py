@@ -35,7 +35,7 @@ goToinitial=1  # 1：go to initial setpoint after sweep; 0: not back
 Out_start =0E-6
 Out_step = 0.01E-6
 Out_stop = 1E-6
-ramp_step= 0.001E-6   #(protective slow ramp between two major steps)
+ramp_step= 0.0001E-6   #(protective slow ramp between two major steps)
 Out_point = round(abs((Out_stop-Out_start))/Out_step)+1
 
 

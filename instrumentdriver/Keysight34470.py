@@ -43,7 +43,7 @@ class Keysight34470():
 
     
 if __name__ == '__main__':
-    ip = 'TCPIP0::192.168.2.12::inst0::INSTR'
+    ip = 'TCPIP0::192.168.2.31::inst0::INSTR'
     K34470 = Keysight34470(ip)
     K34470.reset()
     time.sleep(0.02)
