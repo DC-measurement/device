@@ -83,6 +83,6 @@ if __name__ == '__main__':
     GS200 = GS200(ip)
     GS200.reset()
     time.sleep(0.02)
-    GS200.currentSet(current=-0.001, OUTPUT=1)
+    GS200.currentSet(current=-0.002, OUTPUT=1)
     GS200.close()
 
