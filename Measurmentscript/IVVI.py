@@ -31,10 +31,12 @@ DMM=K34470.Keysight34470(K34470_ip)
 
 ##### configurate out sweeps: (can sweep either V or I) of GS200
 outmode= "CURR" #can be "VOLT" or "CURR"
+outunit= "A"
 rampflag=0  # 1: do slow ramp between two setpoint; 0: not do
 
 ##### configurate measurment mode: can be V or I of K34470
 inmode="VOLT"
+inunit= "V"
 
 ### indicate preamplifier gain ###
 Gvolt=100.0  # for voltage amplifier NF SA410fs
@@ -66,8 +68,8 @@ filename1 = 'IVVI-DoublesweepfromZero' + stamp
 
 # define step channels
 Step = [dict(name='point', unit='', values=vOut)]
-Log1 = [dict(name='Ibias', unit='A', vector=False),
-        dict(name='Vout', unit='V', vector=False)]
+Log1 = [dict(name=outmode, unit=outunit, vector=False),
+        dict(name=inmode, unit=inunit, vector=False)]
 f1 = Labber.createLogFile_ForData(filename1, Log1, Step)
 
 f1.setUser(name)
@@ -117,23 +119,24 @@ for j in tqdm(range(len(vOut))):
     ax2.cla()
     ax3.cla()
     
-    ax1.set_title('Ibias={:.0f}A'.format(vOut[j]))
+    ax1.set_title(outmode+'={}'.format(vOut[j])+outunit)
     ax1.set_xlabel('datapoint')
-    ax1.set_ylabel('Ibias [A]')
-    ax2.set_title('Ibias={:.0f}A'.format(vOut[j]))
+    ax1.set_ylabel(outmode+'['+outunit+']')
+    ax2.set_title(outmode+'={}'.format(vOut[j])+outunit)
     ax2.set_xlabel('datapoint')
-    ax2.set_ylabel('Vout [V]')
-    ax3.set_title('Vout vs. Ibias')
-    ax3.set_xlabel('Ibias [A]')
-    ax3.set_ylabel('Vout  [V]')
+    ax2.set_ylabel(inmode+'['+inunit+']')
+    ax3.set_title(inmode+ 'vs.'+ outmode)
+    ax3.set_xlabel(outmode+'['+outunit+']')
+    ax3.set_ylabel(inmode+'['+inunit+']')
     
     ax1.plot(np.array(Ibias) , marker='.')
     ax2.plot(np.array(Vout), marker='.')
     ax3.plot(np.array(Ibias), np.array(Vout), marker='.')
     
     plt.pause(0.001)
-
-f1.addEntry({'Ibias': np.array(Ibias),'Vout': np.array(Vout)})
+    
+plt.close('all')
+f1.addEntry({outmode: np.array(Ibias),inmode: np.array(Vout)})
 
 
     
