@@ -51,7 +51,7 @@ class GS200():
         """
         Parameters
         ----------
-        voltage : float Unit is [V];
+        voltage : float Unit is [V]; 
         output : int   0 = OFF;1 = ON
         Returns
         -------
@@ -67,6 +67,33 @@ class GS200():
         else:
             self.inst.write(':OUTP OFF')
     
+    def LevelSet(self, level=0, OUTPUT=0, mode="CURR"):  # mode="CURR" or "VOLT"
+         """
+        Parameters
+        ----------
+        voltage : float Unit is [V]; current : float, Unit is [A];
+        output : int   0 = OFF;1 = ON
+        Returns
+        -------
+        """
+         if mode == "VOLT":
+             self.inst.write("SOUR:FUNC {}".format("VOLT"))
+             cur_limit = 200E-3  # set a protective current
+             self.inst.write(':SOUR:PROT:CURR {}'.format(cur_limit))
+         else:
+             self.inst.write("SOUR:FUNC {}".format("CURR"))
+             vol_limit = 30
+             self.inst.write(':SOUR:PROT:VOLT {}'.format(vol_limit))
+
+         if OUTPUT == 1:        
+              # output level in auto range
+              self.inst.write(':SOUR:LEV:AUTO {}'.format(level))
+              time.sleep(0.02)
+              self.inst.write(':OUTP ON')
+         else:
+              self.inst.write(':OUTP OFF')  
+
+
     def close(self):
         self.inst.close()
 
@@ -83,6 +110,7 @@ if __name__ == '__main__':
     GS200 = GS200(ip)
     GS200.reset()
     time.sleep(0.02)
-    GS200.currentSet(current=-0.001, OUTPUT=1)
+    GS200.LevelSet(level=1e-3, OUTPUT=1, mode="VOLT")
+    #GS200.voltageSet(voltage=0, OUTPUT=0)
     GS200.close()
 
