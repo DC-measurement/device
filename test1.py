@@ -73,7 +73,7 @@ def current_set(chassis: str, current: float, output: int):
 
         a = max([math.ceil(abs(current*1320)), 1])
 
-        vol_limit = min([a, 10])
+        vol_limit = min([a, 11])
 
 
 
