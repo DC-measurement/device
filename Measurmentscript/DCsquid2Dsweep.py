@@ -22,7 +22,7 @@ import Instrumentdriver.Keysight34470 as K34470
 
 ####################################################
 #  IP addresses of instruments
-GS200_ip = 'TCPIP0::192.168.2.12::inst0::INSTR'
+GS200_ip1 = 'TCPIP0::192.168.2.12::inst0::INSTR'
 K34470_ip= 'TCPIP0::192.168.2.31::inst0::INSTR'
 
 # open input and output instance

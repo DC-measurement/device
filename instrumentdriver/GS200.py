@@ -106,7 +106,8 @@ class GS200():
 
     
 if __name__ == '__main__':
-    ip = 'TCPIP0::192.168.2.12::inst0::INSTR'
+    #ip = 'TCPIP0::192.168.2.12::inst0::INSTR'
+    ip='USB0::0x0B21::0x0039::91S200133::0::INSTR'
     GS200 = GS200(ip)
     GS200.reset()
     time.sleep(0.02)
