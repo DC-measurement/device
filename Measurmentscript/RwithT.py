@@ -8,7 +8,8 @@ import Labber
 import numpy as np
 import time
 import datetime
-from tqdm import tqdm
+import timeit
+#from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pandas as pd
 # path -----
@@ -35,9 +36,7 @@ K34470_ip= 'TCPIP0::192.168.2.31::inst0::INSTR'
 GS200 = gs.GS200(GS200_ip)
 DMM=K34470.Keysight34470(K34470_ip)
 
-######## read temperature datapoint #############
-x = np.array(pd.read_csv(Tfiledirect, delim_whitespace=True,header=None))
-a=x[-1][-1]
+
 ################################################
 
 ##### configurate out sweeps: (can sweep either V or I) of GS200
@@ -52,18 +51,11 @@ inunit= "V"
 ### indicate preamplifier gain ###
 Gvolt=100.0  # for voltage amplifier NF SA410fs
 
-##### set output sweep range  (always start from zero and comback to zero and save all data)
-Out_min =-1E-6
-Out_step = 0.1E-6
-Out_max = 1E-6
-ramp_step= 0.001E-6   #(protective slow ramp between two major steps)
-#Out_point = round(abs((Out_stop-Out_start))/Out_step)+1
+##### set output setpoint (in this program we do the bipolar measure)#############
 
+Iout=1e-6
 ####################################################
-###### for Labber data structure ######
-#make out put list
-vOut=np.r_[np.arange(0, Out_min, -Out_step), np.arange(Out_min, Out_max, Out_step), 
-           np.arange (Out_max, 0, -Out_step)]
+
 
 
 
@@ -77,10 +69,92 @@ datetime0 = datetime.datetime.now()
 stamp = '{0:%H%M%S}'.format(datetime0)
 filename1 = 'IVVI-DoublesweepfromZero' + stamp
 
+
+
+fig = plt.figure(figsize=[16,12])
+ax1 = fig.add_subplot(221)
+ax2 = fig.add_subplot(222)
+ax3 = fig.add_subplot(223)
+ax4 = fig.add_subplot(224)
+#######################################
+
+
+j=0
+Timelist=[]
+Tlist=[]
+Vmeas=[]
+Ibias=[]
+Rcal=[]
+######## define just script test indicator ###########
+idx=20
+#####################################################
+time0=timeit.default_timer()
+
+
+#####################################################
+
+while idx>=0:
+    deltatime=float(timeit.default_timer()-time0)/60
+    Timelist.append(deltatime)
+    ######## read temperature datapoint #############
+    Trecord = np.array(pd.read_csv(Tfiledirect, delim_whitespace=True,header=None))
+    time.sleep(0.02)
+    Tdata=Trecord[-1][-1]
+    Tlist.append(Tdata)
+    
+    # output current or volt (bipolar)
+    GS200.LevelSet(Iout, OUTPUT=1, mode=outmode)
+    time.sleep(0.02)
+    Vdata1=float(DMM.measure(mode=inmode))
+    time.sleep(0.02)
+    GS200.LevelSet(-1*Iout, OUTPUT=1, mode=outmode)
+    time.sleep(0.02)
+    Vdata2=float(DMM.measure(mode=inmode))
+    time.sleep(0.02)
+    
+    Ibias.append(Iout)
+    Vmeas.append((Vdata1-Vdata2)/(2*Gvolt))
+    Rcal.append((Vdata1-Vdata2)/(2*Gvolt*Iout))
+    
+    idx-=1
+        
+    ax1.cla()
+    ax2.cla()
+    ax3.cla()
+    ax4.cla()
+    
+    ax1.set_title('Temp vs. Time')
+    ax1.set_xlabel('Time Elapse (min)')
+    ax1.set_ylabel('Temperature (K)')
+    ax2.set_title('Ibias vs. Time')
+    ax2.set_xlabel('Time Elapse (min)')
+    ax2.set_ylabel('Ibias (A)')
+    ax3.set_title('Vmeas vs. Time')
+    ax3.set_xlabel('Time Elapse (min)')
+    ax3.set_ylabel('Vmeas (V)')
+    ax4.set_title('Rcal vs. Time')
+    ax4.set_xlabel('Time Elapse (min)')
+    ax4.set_ylabel('Rcal (ohm)')
+    
+    ax1.plot(np.array(Timelist),np.array(Tlist) , marker='.')
+    ax2.plot(np.array(Timelist),np.array(Ibias) , marker='.')
+    ax3.plot(np.array(Timelist),np.array(Vmeas), marker='.')
+    ax4.plot(np.array(Timelist), np.array(Rcal), marker='.')
+    
+    plt.pause(0.001)
+    
+plt.close('all')
+#GS200.LevelSet(0, 0, mode=mode)
+DMM.close()
+GS200.close()
+
+
 # define step channels
-Step = [dict(name='point', unit='', values=vOut)]
-Log1 = [dict(name=outmode, unit=outunit, vector=False),
-        dict(name=inmode, unit=inunit, vector=False)]
+Step = [dict(name='Time Elapse', unit='min', values=Timelist)]
+Log1 = [dict(name='Temperature', unit='K', vector=False),
+        dict(name='Ibias', unit='A', vector=False),
+        dict(name='Vmeas', unit='V', vector=False),
+        dict(name='Rcal', unit='ohm', vector=False)]
 f1 = Labber.createLogFile_ForData(filename1, Log1, Step)
 
 f1.setUser(name)
@@ -89,77 +163,11 @@ f1.setTags(tag)
 
 #addcomment = comment+', readsource={}dBm, Drivesource={}dBm, fq={}GHz, amp_I_read={}, amp_I_drive={}, Tpi={}ns'.format(LOpowerRead, Qubit_MW_power, (Qubit_MW_freq)/1e9, amp_I, amp_I_drv, Tpi)
 f1.setComment(comment)
-
-fig = plt.figure(figsize=[12,12])
-ax1 = fig.add_subplot(311)
-ax2 = fig.add_subplot(312)
-ax3 = fig.add_subplot(313)
-#######################################
-
-
-j=0
-Tlist=[]
-Vout=[]
-Ibias=[]
-
-######## define just script test indicator ###########
-a=20
-#####################################################
-
-while a>=20:
-
-    # output current or volt
-    if rampflag==0:
-        level = vOut[j]
-        GS200.LevelSet(level, OUTPUT=1, mode=outmode)
-        time.sleep(0.02)
-    else:
-        if j==0:
-            GS200.LevelSet(vOut[j], OUTPUT=1, mode=outmode)
-            time.sleep(0.02)
-        else:
-            #vRamp=np.arange(vCurr[j-1], vCurr[j], ramp_step)
-            Ramp_point = round(abs((vOut[j]-vOut[j-1]))/ramp_step)+1
-            vRamp = np.linspace(vOut[j-1], vOut[j], Ramp_point)
-            #print(vRamp)
-            jdx=0
-            for jdx in range(len(vRamp)):
-                GS200.LevelSet(vRamp[jdx], OUTPUT=1, mode=outmode)
-                time.sleep(0.02)
-    # volt from amplifier
-    Ibias.append(vOut[j])
-    Meas = float(DMM.measure(mode=inmode))/Gvolt
-    Vout.append(Meas)
-    time.sleep(0.02)
-    
-    ax1.cla()
-    ax2.cla()
-    ax3.cla()
-    
-    ax1.set_title(outmode+'={}'.format(vOut[j])+outunit)
-    ax1.set_xlabel('datapoint')
-    ax1.set_ylabel(outmode+'['+outunit+']')
-    ax2.set_title(outmode+'={}'.format(vOut[j])+outunit)
-    ax2.set_xlabel('datapoint')
-    ax2.set_ylabel(inmode+'['+inunit+']')
-    ax3.set_title(inmode+ 'vs.'+ outmode)
-    ax3.set_xlabel(outmode+'['+outunit+']')
-    ax3.set_ylabel(inmode+'['+inunit+']')
-    
-    ax1.plot(np.array(Ibias) , marker='.')
-    ax2.plot(np.array(Vout), marker='.')
-    ax3.plot(np.array(Ibias), np.array(Vout), marker='.')
-    
-    plt.pause(0.001)
-    
-plt.close('all')
-f1.addEntry({outmode: np.array(Ibias),inmode: np.array(Vout)})
+f1.addEntry({'Temperature': np.array(Tlist), 'Ibias': np.array(Ibias), 
+             'Vmeas': np.array(Vmeas), 'Rcal': np.array(Rcal) })
 
 
     
 
 
    
-#GS200.LevelSet(0, 0, mode=mode)
-DMM.close()
-GS200.close()
