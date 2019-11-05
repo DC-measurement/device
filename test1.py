@@ -97,7 +97,7 @@ def current_set(chassis: str, current: float, output: int):
 
         inst.write(':SOUR:LEV {}'.format(current))
 
-        time.sleep(0.02)
+        time.sleep(0.03)
 
         inst.write(':OUTP ON')
 
