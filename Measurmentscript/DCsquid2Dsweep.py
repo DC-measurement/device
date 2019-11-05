@@ -34,7 +34,7 @@ DMM=K34470.Keysight34470(K34470_ip)
 ##### configurate out sweeps for bias: (can sweep either V or I) of GS200
 outmode= "CURR" #can be "VOLT" or "CURR"
 outunit= "A"
-rampflag=1  # 1: do slow ramp between two setpoint; 0: not do
+rampflag=0  # 1: do slow ramp between two setpoint; 0: not do
 
 ##### configurate measurment mode for bias: can be V or I of K34470
 inmode="VOLT"
