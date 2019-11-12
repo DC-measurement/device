@@ -69,6 +69,16 @@ datetime0 = datetime.datetime.now()
 stamp = '{0:%H%M%S}'.format(datetime0)
 filename1 = 'IVVI-DoublesweepfromZero' + stamp
 
+Step = [dict(name='Time Elapse', unit='min')]
+Log1 = [dict(name='Temperature', unit='K'),
+        dict(name='Ibias', unit='A'),
+        dict(name='Vmeas', unit='V'),
+        dict(name='Rcal', unit='ohm')]
+f1 = Labber.createLogFile_ForData(filename1, Log1)
+
+f1.setUser(name)
+f1.setProject(project)
+f1.setTags(tag)
 
 
 fig = plt.figure(figsize=[16,12])
@@ -86,7 +96,7 @@ Vmeas=[]
 Ibias=[]
 Rcal=[]
 ######## define just script test indicator ###########
-idx=20
+idx=40
 #####################################################
 time0=timeit.default_timer()
 
@@ -142,6 +152,7 @@ while idx>=0:
     ax4.plot(np.array(Timelist), np.array(Rcal), marker='.')
     
     plt.pause(0.001)
+    #time.sleep(60)
     
 plt.close('all')
 #GS200.LevelSet(0, 0, mode=mode)
@@ -150,16 +161,7 @@ GS200.close()
 
 
 # define step channels
-Step = [dict(name='Time Elapse', unit='min', values=Timelist)]
-Log1 = [dict(name='Temperature', unit='K', vector=False),
-        dict(name='Ibias', unit='A', vector=False),
-        dict(name='Vmeas', unit='V', vector=False),
-        dict(name='Rcal', unit='ohm', vector=False)]
-f1 = Labber.createLogFile_ForData(filename1, Log1, Step)
 
-f1.setUser(name)
-f1.setProject(project)
-f1.setTags(tag)
 
 #addcomment = comment+', readsource={}dBm, Drivesource={}dBm, fq={}GHz, amp_I_read={}, amp_I_drive={}, Tpi={}ns'.format(LOpowerRead, Qubit_MW_power, (Qubit_MW_freq)/1e9, amp_I, amp_I_drv, Tpi)
 f1.setComment(comment)
