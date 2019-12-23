@@ -22,8 +22,8 @@ import Instrumentdriver.Keysight34470 as K34470
 
 ####################################################
 #  IP addresses of instruments
-GS200_ip = 'TCPIP0::192.168.2.12::inst0::INSTR'
-K34470_ip= 'TCPIP0::192.168.2.31::inst0::INSTR'
+GS200_ip = 'TCPIP0::192.168.2.14::inst0::INSTR'
+K34470_ip= 'TCPIP0::192.168.2.22::inst0::INSTR'
 
 # open input and output instance
 GS200 = gs.GS200(GS200_ip)
@@ -42,10 +42,10 @@ inunit= "V"
 Gvolt=100.0  # for voltage amplifier NF SA410fs
 
 ##### set output sweep range  (always start from zero and comback to zero and save all data)
-Out_min =-1E-6
-Out_step = 0.1E-6
-Out_max = 1E-6
-ramp_step= 0.001E-6   #(protective slow ramp between two major steps)
+Out_min =-2E-2
+Out_step = 0.02E-2
+Out_max = 2E-2
+ramp_step= 0.001E-2   #(protective slow ramp between two major steps)
 #Out_point = round(abs((Out_stop-Out_start))/Out_step)+1
 
 ####################################################
@@ -58,13 +58,13 @@ vOut=np.r_[np.arange(0, Out_min, -Out_step), np.arange(Out_min, Out_max, Out_ste
 
 ############ Labber Logger Tags ##################
 name = 'RWang'
-tag = ['DCmeasuretest']  # list
-project = 'IVVI'
+tag = ['DCfirstattemp-Alstripandcontacts']  # list
+project = 'IVVI /IV-base7mK '
 
 comment = ''
 datetime0 = datetime.datetime.now()
 stamp = '{0:%H%M%S}'.format(datetime0)
-filename1 = 'IVVI-DoublesweepfromZero' + stamp
+filename1 = 'IVVI-AlstripRT' + stamp
 
 # define step channels
 Step = [dict(name='point', unit='', values=vOut)]
