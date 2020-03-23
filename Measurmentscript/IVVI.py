@@ -32,7 +32,7 @@ DMM=K34470.Keysight34470(K34470_ip)
 ##### configurate out sweeps: (can sweep either V or I) of GS200
 outmode= "CURR" #can be "VOLT" or "CURR"
 outunit= "A"
-rampflag=0  # 1: do slow ramp between two setpoint; 0: not do
+rampflag=1  # 1: do slow ramp between two setpoint; 0: not do
 
 ##### configurate measurment mode: can be V or I of K34470
 inmode="VOLT"
@@ -42,10 +42,10 @@ inunit= "V"
 Gvolt=100.0  # for voltage amplifier NF SA410fs
 
 ##### set output sweep range  (always start from zero and comback to zero and save all data)
-Out_min =-0.2E-6
-Out_step = 0.002E-6
-Out_max = 0.2E-6
-ramp_step= 0.0001E-6   #(protective slow ramp between two major steps)
+Out_min =-10E-3
+Out_step = 0.2E-3
+Out_max = 10E-3
+ramp_step= 0.001E-3   #(protective slow ramp between two major steps)
 #Out_point = round(abs((Out_stop-Out_start))/Out_step)+1
 
 ####################################################
@@ -58,13 +58,13 @@ vOut=np.r_[np.arange(0, Out_min, -Out_step), np.arange(Out_min, Out_max, Out_ste
 
 ############ Labber Logger Tags ##################
 name = 'RWang'
-tag = ['DC2ndattemp-SJJ300nm']  # list
+tag = ['DC-Nbstrip']  # list
 project = 'IVVI/IV-base7mK '
 
 comment = ''
 datetime0 = datetime.datetime.now()
 stamp = '{0:%H%M%S}'.format(datetime0)
-filename1 = 'IVVI-SJJ300nm' + stamp
+filename1 = 'IVVI-Nbstrip-slowfloatnotape' + stamp
 
 # define step channels
 Step = [dict(name='point', unit='', values=vOut)]
