@@ -21,20 +21,20 @@ import Instrumentdriver.GS200 as gs
 
 ####################################################
 #  IP addresses of instruments
-GS200_address = 'TCPIP0::192.168.2.12::inst0::INSTR'
+GS200_address = 'TCPIP0::192.168.2.13::inst0::INSTR'
 
 # GS200--- open instance
 GS200 = gs.GS200(GS200_address)
 
 # configurate sweeps:
 mode= "CURR" #can be "VOLT" or "CURR"
-rampflag=1  # 1: do slow ramp between two setpoint; 0: not do
-goToinitial=1  # 1：go to initial setpoint after sweep; 0: not back
+rampflag=0  # 1: do slow ramp between two setpoint; 0: not do
+goToinitial=0  # 1：go to initial setpoint after sweep; 0: not back
 
 # set sweep range
 Out_start =0E-6
-Out_step = 0.01E-6
-Out_stop = 1E-6
+Out_step = 0.001E-6
+Out_stop = -0.2E-6
 ramp_step= 0.0001E-6   #(protective slow ramp between two major steps)
 Out_point = round(abs((Out_stop-Out_start))/Out_step)+1
 
